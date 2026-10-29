@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xplore Trading AI — Smart Binary Trading & Prediction Platform</title>
+    <meta name="description" content="Xplore Trading AI Copilot: Trade with real-time AI signals, live Binance price feeds, probability forecasting, and candlestick charts.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ==========================================
+         TOP HEADER BAR
+         ========================================== -->
+    <header class="app-header">
+        <div class="header-left">
+            <div class="brand-logo" id="brandLogo">
+                <div class="logo-icon">X</div>
+                <span class="brand-name">XPLORE <span class="brand-name-accent">TRADING</span></span>
+                <span class="brand-badge">AI COPILOT</span>
+            </div>
+
+            <!-- Asset Selector Button -->
+            <button class="asset-select-btn" id="currentAssetBtn">
+                <span id="activeAssetIcon">₿</span>
+                <span class="asset-symbol" id="activeAssetSymbol">BTC/USDT</span>
+                <span class="asset-payout" id="activeAssetPayout">+92%</span>
+                <span style="font-size: 0.75rem; color: #94a3b8;">▼</span>
+            </button>
+        </div>
+
+        <div class="header-center">
+            <!-- Binance WebSocket Live Status Badge -->
+            <div class="market-status-badge connecting" id="marketStatusBadge" title="Binance WebSocket Stream Status">
+                <span class="status-dot"></span>
+                <span id="marketStatusText">BINANCE LIVE</span>
+                <span class="ping-badge" id="pingDisplay">-- ms</span>
+            </div>
+
+            <div class="live-price-box">
+                <span>Live Price:</span>
+                <span class="price-highlight bull" id="currentPriceDisplay">Loading...</span>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <!-- Sound Toggle -->
+            <button class="icon-btn" id="soundToggleBtn" title="Toggle Sound">🔊</button>
+
+            <!-- Refill Demo Button -->
+            <button class="btn-refill" id="refillDemoBtn">🔄 Refill $10k</button>
+
+            <!-- Wallet Box -->
+            <div class="wallet-box">
+                <div>
+                    <select class="wallet-dropdown" id="accountTypeSelect">
+                        <option value="DEMO">Demo Account</option>
+                        <option value="REAL">Real Account</option>
+                    </select>
+                    <div class="wallet-balance" id="walletBalanceDisplay">$10,000.00</div>
+                </div>
+                <span class="account-badge demo" id="walletTypeBadge">DEMO</span>
+            </div>
+
+            <!-- Deposit Button -->
+            <button class="btn-deposit" id="depositModalBtn">+ Deposit</button>
+        </div>
+    </header>
+
+    <!-- ==========================================
+         MAIN WORKSPACE
+         ========================================== -->
+    <main class="app-main">
+
+        <!-- Left Mini Navigation -->
+        <nav class="side-nav">
+            <button class="side-nav-btn active" data-tab="ai-copilot" title="AI Signal Copilot">
+                <span class="icon">🤖</span>
+                <span>AI</span>
+            </button>
+            <button class="side-nav-btn" data-tab="history" title="Trade History">
+                <span class="icon">📊</span>
+                <span>Trades</span>
+                <span class="badge-count" id="activeTradesCount">0</span>
+            </button>
+            <button class="side-nav-btn" data-tab="analytics" title="Performance & Win Rate">
+                <span class="icon">📈</span>
+                <span>Stats</span>
+            </button>
+        </nav>
+
+        <!-- Left Sidebar Details Panel -->
+        <aside class="sidebar-panel">
+
+            <!-- TAB 1: AI COPILOT -->
+            <div class="tab-panel active" id="tab-ai-copilot">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span>⚡ Xplore AI Copilot</span>
+                    </div>
+                    <!-- Language Switcher -->
+                    <div class="lang-toggle">
+                        <button class="lang-btn active" id="langTanglishBtn">Tanglish</button>
+                        <button class="lang-btn" id="langEnglishBtn">English</button>
+                    </div>
+                </div>
+
+                <!-- AI Main Card -->
+                <div class="ai-signal-card">
+                    <div class="signal-status-row">
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);">Market Forecast:</span>
+                        <span class="signal-badge strong-up" id="aiSignalBadge">STRONG BUY 🚀</span>
+                    </div>
+
+                    <!-- Probability Fill -->
+                    <div class="prob-container">
+                        <div class="prob-header">
+                            <span id="aiProbText"><strong>88%</strong> Win Probability</span>
+                            <span style="color: var(--color-green);">Call ⬆</span>
+                        </div>
+                        <div class="prob-track">
+                            <div class="prob-fill up" id="aiProbFill" style="width: 88%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Technical Indicators Breakdown -->
+                    <div class="indicator-grid">
+                        <div class="indicator-item">
+                            <span class="ind-label">RSI (14)</span>
+                            <span class="ind-val" id="aiRsiVal">28.4 (Oversold)</span>
+                        </div>
+                        <div class="indicator-item">
+                            <span class="ind-label">EMA (9/21)</span>
+                            <span class="ind-val" id="aiEmaVal">Bull Cross ▲</span>
+                        </div>
+                        <div class="indicator-item">
+                            <span class="ind-label">MACD Hist</span>
+                            <span class="ind-val" id="aiMacdVal">+4.20 (Bull)</span>
+                        </div>
+                        <div class="indicator-item">
+                            <span class="ind-label">Pattern</span>
+                            <span class="ind-val" id="aiPatternVal">Engulfing</span>
+                        </div>
+                    </div>
+
+                    <!-- AI Explanation Quote -->
+                    <div class="ai-quote-box" id="aiExplanationQuote">
+                        AI Prediction: Next candle <strong>UP (CALL)</strong> poga <strong>88% Chance</strong> irukku! RSI oversold-la irukku + 9 EMA 21 EMA-va cross pannuthu. 🚀
+                    </div>
+
+                    <!-- 1-Click AI Bet Button -->
+                    <button class="btn-ai-action up" id="btnAiBet">
+                        ⚡ 1-Click AI Bet: <strong>CALL (UP ⬆)</strong>
+                    </button>
+                </div>
+
+                <!-- Active Trades Live Tracker -->
+                <div class="active-trades-section">
+                    <div class="section-label">Active Orders</div>
+                    <div id="activeTradesList">
+                        <div class="empty-state">No open orders. Place a CALL or PUT trade!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: TRADE HISTORY -->
+            <div class="tab-panel" id="tab-history">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span>📊 Trade History</span>
+                    </div>
+                </div>
+                <div id="tradeHistoryList">
+                    <div class="empty-state">No past trades yet.</div>
+                </div>
+            </div>
+
+            <!-- TAB 3: PERFORMANCE ANALYTICS -->
+            <div class="tab-panel" id="tab-analytics">
+                <div class="panel-header">
+                    <div class="panel-title">
+                        <span>📈 AI & Trading Stats</span>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="stat-card">
+                        <span class="stat-title">Total Trades</span>
+                        <span class="stat-val" id="statTotalTrades">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">Win Rate</span>
+                        <span class="stat-val win" id="statWinRate">0%</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">Net Profit</span>
+                        <span class="stat-val win" id="statNetProfit">+$0.00</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">AI Accuracy</span>
+                        <span class="stat-val win" id="statAiAccuracy">88%</span>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- Center Chart Area -->
+        <section class="chart-wrapper">
+            <!-- Chart Toolbar Row 1: Chart Types -->
+            <div class="chart-toolbar chart-toolbar-top">
+                <div class="toolbar-label">Chart Type:</div>
+                <div class="chart-type-pills">
+                    <button class="chart-pill active" data-type="candlestick" title="Japanese Candlesticks">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="4" y="4" width="2" height="6" fill="currentColor" rx="0.5"/><rect x="8" y="2" width="2" height="9" fill="rgba(255,59,48,0.9)" rx="0.5"/><line x1="5" y1="2" x2="5" y2="4" stroke="currentColor" stroke-width="1"/><line x1="5" y1="10" x2="5" y2="12" stroke="currentColor" stroke-width="1"/><line x1="9" y1="0.5" x2="9" y2="2" stroke="rgba(255,59,48,0.9)" stroke-width="1"/><line x1="9" y1="11" x2="9" y2="13" stroke="rgba(255,59,48,0.9)" stroke-width="1"/></svg>
+                        Candles
+                    </button>
+                    <button class="chart-pill" data-type="heikin-ashi" title="Heikin-Ashi Smoothed">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="3" y="3" width="3" height="8" fill="currentColor" rx="0.5"/><rect x="8" y="5" width="3" height="5" fill="currentColor" rx="0.5"/><line x1="4.5" y1="1" x2="4.5" y2="3" stroke="currentColor" stroke-width="1"/><line x1="4.5" y1="11" x2="4.5" y2="13" stroke="currentColor" stroke-width="1"/></svg>
+                        Heikin-Ashi
+                    </button>
+                    <button class="chart-pill" data-type="area" title="Mountain Area Gradient">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="1,11 4,6 7,8 10,3 13,5" stroke="currentColor" stroke-width="1.5" fill="none"/><polygon points="1,11 4,6 7,8 10,3 13,5 13,13 1,13" fill="currentColor" opacity="0.3"/></svg>
+                        Area
+                    </button>
+                    <button class="chart-pill" data-type="line" title="Neon Glow Line">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polyline points="1,11 4,7 7,9 10,4 13,6" stroke="#00e5ff" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="4" cy="7" r="1.5" fill="#00e5ff"/><circle cx="10" cy="4" r="1.5" fill="#00e5ff"/></svg>
+                        Line
+                    </button>
+                    <button class="chart-pill" data-type="bars" title="OHLC Financial Bars">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="4" y1="2" x2="4" y2="12" stroke="currentColor" stroke-width="1.5"/><line x1="2" y1="5" x2="4" y2="5" stroke="currentColor" stroke-width="1.5"/><line x1="4" y1="9" x2="6" y2="9" stroke="currentColor" stroke-width="1.5"/><line x1="10" y1="3" x2="10" y2="11" stroke="rgba(255,59,48,0.9)" stroke-width="1.5"/><line x1="8" y1="6" x2="10" y2="6" stroke="rgba(255,59,48,0.9)" stroke-width="1.5"/><line x1="10" y1="9" x2="12" y2="9" stroke="rgba(255,59,48,0.9)" stroke-width="1.5"/></svg>
+                        OHLC Bars
+                    </button>
+                    <button class="chart-pill" data-type="hollow" title="Hollow Pro Candles">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="3" y="4" width="3" height="6" stroke="currentColor" stroke-width="1.5" fill="none" rx="0.5"/><rect x="8" y="3" width="3" height="7" fill="rgba(255,59,48,0.85)" rx="0.5"/><line x1="4.5" y1="2" x2="4.5" y2="4" stroke="currentColor" stroke-width="1.2"/><line x1="4.5" y1="10" x2="4.5" y2="12" stroke="currentColor" stroke-width="1.2"/></svg>
+                        Hollow
+                    </button>
+                    <button class="chart-pill" data-type="baseline" title="Baseline Delta Chart">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="1" y1="7" x2="13" y2="7" stroke="rgba(255,255,255,0.3)" stroke-width="1" stroke-dasharray="2,2"/><polyline points="1,9 4,5 7,8 10,3 13,6" stroke="currentColor" stroke-width="1.5" fill="none"/><polygon points="1,9 4,5 7,7 10,7 13,7 13,9 7,9 1,9" fill="currentColor" opacity="0.2"/></svg>
+                        Baseline
+                    </button>
+                </div>
+
+                <span class="toolbar-divider"></span>
+
+                <!-- MA Indicator Toggles -->
+                <div class="ma-toggle-group">
+                    <button class="tool-btn ma-toggle-btn active" data-ma="ema9" title="Toggle EMA 9">
+                        <span class="ma-dot" style="background:#00e5ff;"></span>EMA 9
+                    </button>
+                    <button class="tool-btn ma-toggle-btn active" data-ma="ema21" title="Toggle EMA 21">
+                        <span class="ma-dot" style="background:#00e676;"></span>EMA 21
+                    </button>
+                    <button class="tool-btn ma-toggle-btn active" data-ma="sma50" title="Toggle SMA 50">
+                        <span class="ma-dot" style="background:#ff3b30;"></span>SMA 50
+                    </button>
+                </div>
+
+                <span class="toolbar-divider"></span>
+
+                <!-- Timeframe Buttons -->
+                <div class="timeframe-group">
+                    <span class="toolbar-label">TF:</span>
+                    <button class="tf-btn" data-tf="1">1s</button>
+                    <button class="tf-btn active" data-tf="5">5s</button>
+                    <button class="tf-btn" data-tf="15">15s</button>
+                    <button class="tf-btn" data-tf="60">1m</button>
+                </div>
+            </div>
+
+            <!-- Canvas Container -->
+            <div class="canvas-container">
+                <canvas id="tradingChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Right Order Execution Panel -->
+        <aside class="trading-panel">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                
+                <!-- Investment Amount -->
+                <div class="order-group">
+                    <div class="order-label">
+                        <span>Investment Amount</span>
+                        <span style="color: var(--color-gold);">$1 - $5,000</span>
+                    </div>
+                    <div class="input-with-controls">
+                        <span class="currency-prefix">$</span>
+                        <input type="number" class="order-input" id="investmentInput" value="100" min="1" max="5000" step="10">
+                    </div>
+                    <!-- Quick Amount Chips -->
+                    <div class="chip-row">
+                        <button class="invest-chip" data-set="10">$10</button>
+                        <button class="invest-chip" data-set="50">$50</button>
+                        <button class="invest-chip" data-set="100">$100</button>
+                        <button class="invest-chip" data-set="500">$500</button>
+                        <button class="invest-chip" data-add="50">+50</button>
+                    </div>
+                </div>
+
+                <!-- Expiry Duration -->
+                <div class="order-group">
+                    <div class="order-label">
+                        <span>Expiration Time</span>
+                        <span style="color: var(--text-muted);">Binary Timer</span>
+                    </div>
+                    <div class="duration-grid">
+                        <button class="duration-btn" data-seconds="15">15s</button>
+                        <button class="duration-btn active" data-seconds="30">30s</button>
+                        <button class="duration-btn" data-seconds="60">1m</button>
+                        <button class="duration-btn" data-seconds="120">2m</button>
+                    </div>
+                </div>
+
+                <!-- Payout Calculation Box -->
+                <div class="payout-summary-box">
+                    <div class="payout-row">
+                        <span>Expected Profit:</span>
+                        <strong id="payoutProfitAmount">+$92.00</strong>
+                    </div>
+                    <div class="payout-row">
+                        <span>Total Payout Return:</span>
+                        <strong id="payoutTotalReturn" style="color: #ffffff;">$192.00 (+92%)</strong>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Big Trade Action Buttons -->
+            <div class="action-buttons-group">
+                <!-- CALL / UP BUTTON -->
+                <button class="btn-trade btn-trade-call" id="btnTradeCall">
+                    <div class="trade-btn-text">
+                        <span class="btn-title">UP ⬆</span>
+                        <span class="btn-sub">CALL · Higher than strike</span>
+                    </div>
+                    <span class="btn-arrow-icon">▲</span>
+                </button>
+
+                <!-- PUT / DOWN BUTTON -->
+                <button class="btn-trade btn-trade-put" id="btnTradePut">
+                    <div class="trade-btn-text">
+                        <span class="btn-title">DOWN ⬇</span>
+                        <span class="btn-sub">PUT · Lower than strike</span>
+                    </div>
+                    <span class="btn-arrow-icon">▼</span>
+                </button>
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- ==========================================
+         MODALS & OVERLAYS
+         ========================================== -->
+
+    <!-- Asset Selector Modal -->
+    <div class="modal-backdrop" id="assetModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span class="modal-title">Select Trading Asset</span>
+                <button class="modal-close-btn" id="closeAssetModalBtn">&times;</button>
+            </div>
+            <div class="asset-modal-list" id="assetSelectorList">
+                <!-- Generated dynamically by app.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Trade Result Celebration Modal -->
+    <div class="modal-backdrop" id="resultModal">
+        <div class="modal-box result-modal-box">
+            <div class="result-icon" id="resultModalIcon">🏆</div>
+            <div class="modal-title" id="resultModalTitle">🎉 PROFIT WON!</div>
+            <div class="result-payout win" id="resultModalPayout">+$92.00</div>
+            <div class="result-details" id="resultModalDetails">▲ CALL on BTC/USD · Return $192.00</div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ==========================================
+         SCRIPTS
+         ========================================== -->
+    <script src="js/audio.js"></script>
+    <script src="js/market.js"></script>
+    <script src="js/ai-engine.js"></script>
+    <script src="js/chart.js"></script>
+    <script src="js/history.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
